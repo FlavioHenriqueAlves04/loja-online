@@ -1,5 +1,6 @@
 package com.sualoja.loja.domain.service;
 
+import com.sualoja.loja.api.dto.UsuarioDTO;
 import com.sualoja.loja.domain.entity.Usuario;
 import com.sualoja.loja.domain.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class UsuarioService {
@@ -14,28 +16,31 @@ public class UsuarioService {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
-    public Usuario salvar(Usuario usuario) {
-        return usuarioRepository.save(usuario);
+    public UsuarioDTO salvar(UsuarioDTO usuarioDTO) {
+        Usuario usuario = new Usuario(usuarioDTO);
+        return new UsuarioDTO(usuarioRepository.save(usuario));
     }
 
-    public Usuario buscarPorEmail(String email) {
-        return usuarioRepository.findByEmail(email);
+    public UsuarioDTO buscarPorEmail(String email) {
+        Usuario usuario = usuarioRepository.findByEmail(email);
+        return usuario != null ? new UsuarioDTO(usuario) : null;
     }
 
-    public List<Usuario> buscarTodos() {
-        return usuarioRepository.findAll();
+    public List<UsuarioDTO> buscarTodos() {
+        return usuarioRepository.findAll().stream().map(UsuarioDTO::new).collect(Collectors.toList());
     }
 
-    public Optional<Usuario> buscarPorId(Integer id) {
-        return usuarioRepository.findById(id);
+    public Optional<UsuarioDTO> buscarPorId(Integer id) {
+        return usuarioRepository.findById(id).map(UsuarioDTO::new);
     }
 
-    public Usuario atualizar(Integer id, Usuario usuario) {
-        return usuarioRepository.findById(id).map(u -> {
-            u.setNome(usuario.getNome());
-            u.setEmail(usuario.getEmail());
-            u.setSenha(usuario.getSenha());
-            return usuarioRepository.save(u);
+    public UsuarioDTO atualizar(Integer id, UsuarioDTO usuarioDTO) {
+        return usuarioRepository.findById(id).map(usuario -> {
+            usuario.setNome(usuarioDTO.getNome());
+            usuario.setEmail(usuarioDTO.getEmail());
+            usuario.setEndereco(usuarioDTO.getEndereco());
+            usuario.setTelefone(usuarioDTO.getTelefone());
+            return new UsuarioDTO(usuarioRepository.save(usuario));
         }).orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
     }
 

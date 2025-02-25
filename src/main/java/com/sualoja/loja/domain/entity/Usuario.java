@@ -1,9 +1,7 @@
 package com.sualoja.loja.domain.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.sualoja.loja.api.dto.UsuarioDTO;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -32,5 +30,14 @@ public class Usuario {
 
     private String telefone;
 
-    private String tipo;
+    @Enumerated(EnumType.STRING)
+    private tipoUsuario tipo;
+
+    public Usuario(UsuarioDTO usuarioDTO) {
+        this.nome = usuarioDTO.getNome();
+        this.email = usuarioDTO.getEmail();
+        this.endereco = usuarioDTO.getEndereco();
+        this.telefone = usuarioDTO.getTelefone();
+        this.tipo = tipoUsuario.valueOf(usuarioDTO.getTipo());
+    }
 }

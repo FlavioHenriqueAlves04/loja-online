@@ -1,6 +1,6 @@
 package com.sualoja.loja.api.controller;
 
-import com.sualoja.loja.domain.entity.Usuario;
+import com.sualoja.loja.api.dto.UsuarioDTO;
 import com.sualoja.loja.domain.service.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -16,28 +16,28 @@ public class UsuarioController {
     private UsuarioService usuarioService;
 
     @PostMapping
-    public Usuario criarUsuario(@RequestBody Usuario usuario) {
-        return usuarioService.salvar(usuario);
+    public UsuarioDTO criarUsuario(@RequestBody UsuarioDTO usuarioDTO) {
+        return usuarioService.salvar(usuarioDTO);
     }
 
     @GetMapping("/{email}")
-    public Usuario buscarPorEmail(@PathVariable String email) {
+    public UsuarioDTO buscarPorEmail(@PathVariable String email) {
         return usuarioService.buscarPorEmail(email);
     }
 
     @GetMapping
-    public List<Usuario> buscarTodos() {
+    public List<UsuarioDTO> buscarTodos() {
         return usuarioService.buscarTodos();
     }
 
     @GetMapping("/id/{id}")
-    public Optional<Usuario> buscarPorId(@PathVariable Integer id) {
+    public Optional<UsuarioDTO> buscarPorId(@PathVariable Integer id) {
         return usuarioService.buscarPorId(id);
     }
 
     @PutMapping("/{id}")
-    public Usuario atualizarUsuario(@PathVariable Integer id, @RequestBody Usuario usuario) {
-        return usuarioService.atualizar(id, usuario);
+    public UsuarioDTO atualizarUsuario(@PathVariable Integer id, @RequestBody UsuarioDTO usuarioDTO) {
+        return usuarioService.atualizar(id, usuarioDTO);
     }
 
     @DeleteMapping("/{id}")

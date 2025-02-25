@@ -1,14 +1,10 @@
 package com.sualoja.loja.api.controller;
 
-import com.sualoja.loja.domain.entity.ItensPedido;
+import com.sualoja.loja.api.dto.PedidoDTO;
 import com.sualoja.loja.domain.entity.Pedido;
-import com.sualoja.loja.domain.entity.Produto;
-import com.sualoja.loja.domain.entity.Usuario;
-import com.sualoja.loja.domain.repository.ProdutoRepository;
-import com.sualoja.loja.domain.repository.UsuarioRepository;
 import com.sualoja.loja.domain.service.PedidoService;
-import com.sualoja.loja.domain.service.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,29 +18,38 @@ public class PedidoController {
     private PedidoService pedidoService;
 
     @PostMapping
-    public Pedido criarPedido(@RequestBody Pedido pedido) {
-        return pedidoService.salvar(pedido);
-    }
-
-    @PostMapping("/{pedidoId}/itens")
-    public Pedido adicionarItemAoPedido(@PathVariable Integer pedidoId, @RequestBody ItensPedido item) {
-        Pedido pedido = new Pedido(); // Buscar pedido por ID
-        pedido.setId(pedidoId);
-        return pedidoService.adicionarItemAoPedido(pedido, item);
+    public Pedido criarPedido(@RequestBody PedidoDTO pedidoDTO) {
+        return pedidoService.salvar(pedidoDTO);
     }
 
     @GetMapping
-    public List<Pedido> buscarTodos() {
+    public List<PedidoDTO> buscarTodos() {
         return pedidoService.buscarTodos();
     }
 
     @GetMapping("/id/{id}")
-    public Optional<Pedido> buscarPorId(@PathVariable Integer id) {
+    public Optional<PedidoDTO> buscarPorId(@PathVariable Integer id) {
         return pedidoService.buscarPorId(id);
     }
 
-    @DeleteMapping("/{id}")
-    public void deletar(@PathVariable Integer id) {
-        pedidoService.deletar(id);
+    @GetMapping("/cliente/{nomeCliente:.+}")
+    public ResponseEntity<List<PedidoDTO>> buscarPorCliente(@PathVariable String nomeCliente) {
+
+        nomeCliente = nomeCliente.replace("+", " ").replace("_", " ");
+        List<PedidoDTO> pedidos = pedidoService.buscarClientePorNome(nomeCliente);
+        return ResponseEntity.ok(pedidos);
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<PedidoDTO> atualizarPedido(@PathVariable Integer id, @RequestBody PedidoDTO pedidoDTO) {
+        PedidoDTO pedidoAtualizado = pedidoService.atualizar(id, pedidoDTO);
+        return ResponseEntity.ok(pedidoAtualizado);
+    }
+
+    @DeleteMapping("/{id}/cancelar")
+    public ResponseEntity<String> cancelarPedido(@PathVariable Integer id) {
+        pedidoService.cancelar(id);
+        return ResponseEntity.ok("Pedido cancelado com sucesso.");
+    }
+
 }

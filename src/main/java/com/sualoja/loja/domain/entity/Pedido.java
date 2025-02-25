@@ -30,7 +30,8 @@ public class Pedido {
 
     private BigDecimal total;
 
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private StatusPedido status;
 
     public void calcularTotal() {
         this.total = itens.stream()
